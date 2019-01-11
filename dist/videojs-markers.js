@@ -286,6 +286,25 @@
         var markerDivBounding = getElementBounding(markerDiv);
         markerDiv.style.marginLeft = markerDivBounding.width / 2 + 'px';
       }
+
+      // if marker text have content then calculate height of textarea.
+      if (marker.text) {
+        var text = marker.text;
+        var div = $('<div id="temp"></div>');
+        div.css({
+          "width": "25.5em",
+          "font-size": "1.25em",
+          "padding": ".5em 3.75em .5em 1.75em",
+          "line-height": "1",
+          "display": "none"
+        });
+
+        div.text(text);
+        $('body').append(div);
+        var divOuterHeight = $('#temp').outerHeight();
+        div.remove();
+        textarea.style.cssText = `height:${divOuterHeight}px`
+      }
     }
 
     function createMarkerDiv(marker) {
