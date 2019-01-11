@@ -240,7 +240,7 @@
 
       if (typeof setting.onMarkerTextKeyPress === "function") {
         // if return false, prevent default behavior
-        textarea.addEventListener('keypress', function (event) {
+        textarea.addEventListener('keydown', function (event) {
           setting.onMarkerTextKeyPress(event, textarea, textCounter);
         });
       }
