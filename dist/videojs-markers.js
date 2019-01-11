@@ -301,9 +301,9 @@
 
         div.text(text);
         $('body').append(div);
-        var divOuterHeight = $('#temp').outerHeight();
+        var outerHeight = $('#temp').outerHeight();
         div.remove();
-        textarea.style.cssText = `height:${divOuterHeight}px`
+        textarea.style.cssText = `height:${outerHeight}px`
       }
     }
 
