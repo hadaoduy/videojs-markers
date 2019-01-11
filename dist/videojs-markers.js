@@ -303,7 +303,7 @@
         $('body').append(div);
         var outerHeight = $('#temp').outerHeight();
         div.remove();
-        textarea.style.cssText = `height:${outerHeight}px`
+        textarea.style.cssText = `height:${outerHeight - 1}px;word-wrap: break-word;`
       }
     }
 
