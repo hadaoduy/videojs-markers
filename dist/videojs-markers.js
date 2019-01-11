@@ -59,11 +59,11 @@
         'font-size': '17px'
       }
     },
-    onMarkerClick: function onMarkerClick(marker) {},
-    onMarkerReached: function onMarkerReached(marker, index) {},
-    onMarkerTextKeyPress: function onMarkerTextKeyPress(marker, index) {},
-    onMarkerTextClick: function onMarkerTextClick(marker, index) {},
-    onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) {},
+    onMarkerClick: function onMarkerClick(marker) { },
+    onMarkerReached: function onMarkerReached(marker, index) { },
+    onMarkerTextKeyPress: function onMarkerTextKeyPress(marker, index) { },
+    onMarkerTextClick: function onMarkerTextClick(marker, index) { },
+    onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) { },
     markers: [],
     rightThreshold: 80, //percent
     bookmarkPlaceHolder: 'enter bookmark title'
@@ -148,14 +148,14 @@
      * register the markers plugin (dependent on jquery)
      */
     var setting = _video2.default.mergeOptions(defaultSetting, options),
-        markersMap = {},
-        markersList = [],
-        // list of markers sorted by time
-    currentMarkerIndex = NULL_INDEX,
-        player = this,
-        markerTip = null,
-        breakOverlay = null,
-        overlayIndex = NULL_INDEX;
+      markersMap = {},
+      markersList = [],
+      // list of markers sorted by time
+      currentMarkerIndex = NULL_INDEX,
+      player = this,
+      markerTip = null,
+      breakOverlay = null,
+      overlayIndex = NULL_INDEX;
 
     function sortMarkersList() {
       // sort the list by time in asc order
@@ -190,9 +190,9 @@
         'placeholder': setting.bookmarkPlaceHolder,
         name: 'bookmark_title'
       }, {
-        'marker-id': marker.key,
-        'maxlength': 140
-      });
+          'marker-id': marker.key,
+          'maxlength': 140
+        });
 
       var deleteIcon = _video2.default.createEl('button', {
         className: 'fa fa-trash',
@@ -302,7 +302,7 @@
         var preventDefault = false;
         if (typeof setting.onMarkerClick === "function") {
           // if return false, prevent default behavior
-          preventDefault = setting.onMarkerClick(marker) === false;
+          preventDefault = setting.onMarkerClick(e, marker) === false;
         }
 
         if (!preventDefault) {
