@@ -157,6 +157,8 @@
       breakOverlay = null,
       overlayIndex = NULL_INDEX;
 
+    player.marker_clicked = false;// true when click marker at progress bar of video.
+
     function sortMarkersList() {
       // sort the list by time in asc order
       markersList.sort(function (a, b) {
@@ -186,7 +188,6 @@
       var textarea = _video2.default.createEl('textarea', {
         className: 'marker-content',
         innerText: marker.text,
-        // 'style': "height: 35px;",
         'placeholder': setting.bookmarkPlaceHolder,
         name: 'bookmark_title'
       }, {
@@ -242,6 +243,12 @@
         // if return false, prevent default behavior
         textarea.addEventListener('keydown', function (event) {
           setting.onMarkerTextKeyPress(event, textarea, textCounter);
+
+          setTimeout(function () {
+            var el = event.target;
+            el.style.cssText = 'word-break:break-word;height:' + (el.scrollHeight - 1) + 'px';
+            textCounter.innerText = 140 - textarea.value.length;
+          }, 0);
         });
       }
 
@@ -301,9 +308,9 @@
 
         div.text(text);
         $('body').append(div);
-        var outerHeight = $('#temp').outerHeight();
+        var divOuterHeight = $('#temp').outerHeight();
         div.remove();
-        textarea.style.cssText = `height:${outerHeight - 1}px;word-wrap: break-word;`
+        textarea.style.cssText = `height:${divOuterHeight - 1}px;word-wrap: break-word;`
       }
     }
 
@@ -317,11 +324,48 @@
       setMarkderDivStyle(marker, markerDiv);
 
       // bind click event to seek to marker time
-      markerDiv.addEventListener('click', function (e) {
+      markerDiv.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
         var preventDefault = false;
+
         if (typeof setting.onMarkerClick === "function") {
           // if return false, prevent default behavior
-          preventDefault = setting.onMarkerClick(e, marker) === false;
+          preventDefault = setting.onMarkerClick(event, marker) === false;
+          player.marker_clicked = true;
+          var markerContent = markerDiv.querySelector('.marker-content')
+          markerContent.focus();
+
+          markerDiv.addEventListener('mouseover', function (e) {
+            markerDiv.classList.add('vjs-bookmark--focus');
+
+            markerDiv.querySelector('.fa-trash').classList.remove('hide');
+            markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');
+            markerDiv.querySelector('.fa-check').classList.remove('show');
+          });
+
+          markerDiv.addEventListener('mouseout', function (event) {
+            if (player.marker_clicked) {
+              markerDiv.classList.add('vjs-bookmark--focus');
+            }
+          });
+          
+          markerContent.addEventListener('blur', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+
+            if (event.relatedTarget != null) {
+              var id = event.relatedTarget.id;
+
+              if (id && id.indexOf('delete-icon') !== -1) {
+                return
+              }
+            }
+
+            markerDiv.classList.remove('vjs-bookmark--focus');
+            player.marker_clicked = false;
+            player.play();
+          })
         }
 
         if (!preventDefault) {
@@ -400,7 +444,14 @@
 
     // attach hover event handler
     function registerMarkerTipHandler(markerDiv) {
-      markerDiv.addEventListener('mouseover', function () {
+      markerDiv.addEventListener('mouseover', function (e) {
+        // prevent mouseover trigger in child element of current element.
+        if (e.target !== this) {
+          markerDiv.classList.remove('vjs-bookmark--focus');
+          return;
+        }
+
+        $('.vjs-bookmark').removeClass('vjs-bookmark--focus');
         markerDiv.classList.add('vjs-bookmark--focus');
 
         markerDiv.querySelector('.fa-trash').classList.remove('hide');
@@ -408,8 +459,10 @@
         markerDiv.querySelector('.fa-check').classList.remove('show');
       });
 
-      markerDiv.addEventListener('mouseout', function () {
-        markerDiv.classList.remove('vjs-bookmark--focus');
+      markerDiv.addEventListener('mouseout', function (event) {
+        if (!player.marker_clicked) {
+          markerDiv.classList.remove('vjs-bookmark--focus');
+        }
       });
     }
 
