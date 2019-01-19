@@ -349,7 +349,7 @@
               markerDiv.classList.add('vjs-bookmark--focus');
             }
           });
-          
+
           markerContent.addEventListener('blur', (event) => {
             event.stopPropagation();
             event.preventDefault();
@@ -360,11 +360,13 @@
               if (id && id.indexOf('delete-icon') !== -1) {
                 return
               }
+
+              // Trương hợp event.relatedTarget === null là khi click vào màn hình phía trên play controls.
+              player.play();
             }
 
             markerDiv.classList.remove('vjs-bookmark--focus');
             player.marker_clicked = false;
-            player.play();
           })
         }
 
