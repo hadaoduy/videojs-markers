@@ -64,6 +64,8 @@
     onMarkerTextKeyPress: function onMarkerTextKeyPress(marker, index) { },
     onMarkerTextClick: function onMarkerTextClick(marker, index) { },
     onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) { },
+    onMarkerTextBlur: function onMarkerTextBlur(marker, index) { },
+
     markers: [],
     rightThreshold: 80, //percent
     bookmarkPlaceHolder: 'enter bookmark title'
@@ -312,6 +314,8 @@
         div.remove();
         textarea.style.cssText = `height:${divOuterHeight - 1}px;word-wrap: break-word;`
       }
+
+      return textarea;
     }
 
     function createMarkerDiv(marker) {
@@ -321,7 +325,7 @@
         'data-marker-time': setting.markerTip.time(marker)
       });
 
-      setMarkderDivStyle(marker, markerDiv);
+      let textarea = setMarkderDivStyle(marker, markerDiv);
 
       // bind click event to seek to marker time
       markerDiv.addEventListener('click', function (event) {
@@ -350,7 +354,9 @@
             }
           });
 
-          markerContent.addEventListener('blur', (event) => {
+          markerContent.addEventListener('blur', textareaBlurHandler, false);
+
+          function textareaBlurHandler(event) {
             event.stopPropagation();
             event.preventDefault();
 
@@ -358,7 +364,7 @@
               var id = event.relatedTarget.id;
 
               if (id && id.indexOf('delete-icon') !== -1) {
-                return
+                return;
               }
 
               // Trương hợp event.relatedTarget === null là khi click vào màn hình phía trên play controls.
@@ -367,7 +373,13 @@
 
             markerDiv.classList.remove('vjs-bookmark--focus');
             player.marker_clicked = false;
-          })
+
+            if (typeof setting.onMarkerTextBlur === 'function') {
+              setting.onMarkerTextBlur(event, textarea);
+            }
+
+            markerContent.removeEventListener('blur', textareaBlurHandler, false);
+          }
         }
 
         if (!preventDefault) {
